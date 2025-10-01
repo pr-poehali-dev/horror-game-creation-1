@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import JumpscareScreen from './JumpscareScreen';
 import type { PlayerData, Enemy } from '../App';
 
 interface BattleSystemProps {
@@ -18,6 +19,7 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [shakePlayer, setShakePlayer] = useState(false);
   const [shakeEnemy, setShakeEnemy] = useState(false);
+  const [showJumpscare, setShowJumpscare] = useState(false);
 
   useEffect(() => {
     if (!isPlayerTurn && currentEnemy.hp > 0 && currentPlayer.hp > 0) {
@@ -32,9 +34,8 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
     if (currentPlayer.hp <= 0) {
       setBattleLog((prev) => [...prev, 'Вы проиграли...']);
       setTimeout(() => {
-        setPlayer({ ...currentPlayer });
-        onBattleEnd(false);
-      }, 2000);
+        setShowJumpscare(true);
+      }, 1000);
     } else if (currentEnemy.hp <= 0) {
       setBattleLog((prev) => [...prev, `${enemy.name} повержен!`]);
       setTimeout(() => {
@@ -43,6 +44,12 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
       }, 2000);
     }
   }, [currentPlayer.hp, currentEnemy.hp]);
+
+  const handleJumpscareFinish = () => {
+    setShowJumpscare(false);
+    setPlayer({ ...currentPlayer });
+    onBattleEnd(false);
+  };
 
   const playerAttack = () => {
     const damage = Math.max(15 - currentEnemy.defense, 5) + Math.floor(Math.random() * 10);
@@ -93,7 +100,11 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-red-950/30 to-black p-8">
+    <>
+      {showJumpscare && (
+        <JumpscareScreen enemyName={enemy.name} onFinish={handleJumpscareFinish} />
+      )}
+      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-red-950/30 to-black p-8">
       <Card className="w-full max-w-5xl p-8 bg-black/80 border-2 border-red-900">
         {/* Enemy */}
         <div className={`text-center mb-8 ${shakeEnemy ? 'animate-shake' : ''}`}>
@@ -172,5 +183,6 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
         )}
       </Card>
     </div>
+    </>
   );
 }
