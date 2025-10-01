@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
+import { audioSystem } from '../utils/audioSystem';
 
 interface SettingsProps {
   onClose: () => void;
@@ -44,7 +45,10 @@ export default function Settings({ onClose }: SettingsProps) {
                 </div>
                 <Slider
                   value={musicVolume}
-                  onValueChange={setMusicVolume}
+                  onValueChange={(value) => {
+                    setMusicVolume(value);
+                    audioSystem.setMusicVolume(value[0] / 100);
+                  }}
                   max={100}
                   step={1}
                   className="w-full"
@@ -58,7 +62,10 @@ export default function Settings({ onClose }: SettingsProps) {
                 </div>
                 <Slider
                   value={sfxVolume}
-                  onValueChange={setSfxVolume}
+                  onValueChange={(value) => {
+                    setSfxVolume(value);
+                    audioSystem.setSfxVolume(value[0] / 100);
+                  }}
                   max={100}
                   step={1}
                   className="w-full"

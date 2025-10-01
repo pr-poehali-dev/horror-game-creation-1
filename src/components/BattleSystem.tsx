@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import JumpscareScreen from './JumpscareScreen';
+import { audioSystem } from '../utils/audioSystem';
 import type { PlayerData, Enemy } from '../App';
 
 interface BattleSystemProps {
@@ -20,6 +21,11 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
   const [shakePlayer, setShakePlayer] = useState(false);
   const [shakeEnemy, setShakeEnemy] = useState(false);
   const [showJumpscare, setShowJumpscare] = useState(false);
+
+  useEffect(() => {
+    audioSystem.playBackgroundMusic('battle');
+    return () => audioSystem.stopBackgroundMusic();
+  }, []);
 
   useEffect(() => {
     if (!isPlayerTurn && currentEnemy.hp > 0 && currentPlayer.hp > 0) {
@@ -52,6 +58,7 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
   };
 
   const playerAttack = () => {
+    audioSystem.playSoundEffect('attack');
     const damage = Math.max(15 - currentEnemy.defense, 5) + Math.floor(Math.random() * 10);
     const newEnemyHp = Math.max(currentEnemy.hp - damage, 0);
     
@@ -67,6 +74,7 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
   };
 
   const playerDefend = () => {
+    audioSystem.playSoundEffect('heal');
     const healAmount = 10;
     const newHp = Math.min(currentPlayer.hp + healAmount, currentPlayer.maxHp);
     setCurrentPlayer({ ...currentPlayer, hp: newHp });
@@ -76,6 +84,7 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
 
   const useItem = (item: string) => {
     if (item === 'Зелье здоровья') {
+      audioSystem.playSoundEffect('heal');
       const healAmount = 30;
       const newHp = Math.min(currentPlayer.hp + healAmount, currentPlayer.maxHp);
       setCurrentPlayer({ ...currentPlayer, hp: newHp });
@@ -85,6 +94,7 @@ export default function BattleSystem({ player, enemy, onBattleEnd, setPlayer }: 
   };
 
   const enemyTurn = () => {
+    audioSystem.playSoundEffect('damage');
     const damage = Math.max(currentEnemy.attack - 5, 3) + Math.floor(Math.random() * 8);
     const newPlayerHp = Math.max(currentPlayer.hp - damage, 0);
     

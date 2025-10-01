@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { audioSystem } from '../utils/audioSystem';
 
 interface MainMenuProps {
   onNewGame: () => void;
@@ -8,6 +10,16 @@ interface MainMenuProps {
 }
 
 export default function MainMenu({ onNewGame, onContinue, onSettings, hasSavedGame }: MainMenuProps) {
+  useEffect(() => {
+    audioSystem.playBackgroundMusic('menu');
+    return () => audioSystem.stopBackgroundMusic();
+  }, []);
+
+  const handleButtonClick = (callback: () => void) => {
+    audioSystem.playSoundEffect('button');
+    callback();
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-[#0a0a0f] to-[#1a1a2e] relative">
       <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
@@ -25,7 +37,7 @@ export default function MainMenu({ onNewGame, onContinue, onSettings, hasSavedGa
 
         <div className="space-y-4 flex flex-col items-center">
           <Button
-            onClick={onNewGame}
+            onClick={() => handleButtonClick(onNewGame)}
             className="w-64 h-14 text-2xl bg-red-900/50 hover:bg-red-800/70 border-2 border-red-700 text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(233,69,96,0.6)]"
           >
             НОВАЯ ИГРА
@@ -33,7 +45,7 @@ export default function MainMenu({ onNewGame, onContinue, onSettings, hasSavedGa
 
           {hasSavedGame && (
             <Button
-              onClick={onContinue}
+              onClick={() => handleButtonClick(onContinue)}
               className="w-64 h-14 text-2xl bg-purple-900/50 hover:bg-purple-800/70 border-2 border-purple-700 text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]"
             >
               ПРОДОЛЖИТЬ
@@ -41,7 +53,7 @@ export default function MainMenu({ onNewGame, onContinue, onSettings, hasSavedGa
           )}
 
           <Button
-            onClick={onSettings}
+            onClick={() => handleButtonClick(onSettings)}
             className="w-64 h-14 text-2xl bg-gray-800/50 hover:bg-gray-700/70 border-2 border-gray-600 text-white transition-all duration-300 hover:scale-105"
           >
             НАСТРОЙКИ

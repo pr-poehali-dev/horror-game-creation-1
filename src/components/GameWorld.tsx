@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import { audioSystem } from '../utils/audioSystem';
 import type { PlayerData, Enemy } from '../App';
 
 interface GameWorldProps {
@@ -37,6 +38,11 @@ const locations = {
 export default function GameWorld({ player, onBattle, onDialog, onInventory, onSave, onMenu }: GameWorldProps) {
   const [currentLocation, setCurrentLocation] = useState<keyof typeof locations>('dark_forest');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    audioSystem.playBackgroundMusic('exploration');
+    return () => audioSystem.stopBackgroundMusic();
+  }, []);
 
   const location = locations[currentLocation];
 

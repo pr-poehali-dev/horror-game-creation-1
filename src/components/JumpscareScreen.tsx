@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { audioSystem } from '../utils/audioSystem';
 
 interface JumpscareScreenProps {
   enemyName: string;
@@ -17,14 +18,9 @@ export default function JumpscareScreen({ enemyName, onFinish }: JumpscareScreen
 
   useEffect(() => {
     if (!audioPlayed) {
-      try {
-        const audio = new Audio();
-        audio.volume = 0.8;
-        audio.play().catch(() => {});
-        setAudioPlayed(true);
-      } catch (e) {
-        console.log('Audio failed');
-      }
+      audioSystem.stopBackgroundMusic();
+      audioSystem.playScreamerSound(enemyName);
+      setAudioPlayed(true);
     }
 
     const timer = setTimeout(() => {
@@ -32,7 +28,7 @@ export default function JumpscareScreen({ enemyName, onFinish }: JumpscareScreen
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [audioPlayed, onFinish]);
+  }, [audioPlayed, onFinish, enemyName]);
 
   return (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black animate-fade-in">

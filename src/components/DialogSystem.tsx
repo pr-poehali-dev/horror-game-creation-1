@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import { audioSystem } from '../utils/audioSystem';
 
 interface DialogSystemProps {
   npcName: string;
@@ -24,6 +25,7 @@ export default function DialogSystem({ npcName, dialog, onDialogEnd }: DialogSys
     const typingInterval = setInterval(() => {
       if (charIndex < text.length) {
         setDisplayedText(text.substring(0, charIndex + 1));
+        audioSystem.playSoundEffect('dialog');
         charIndex++;
       } else {
         setIsTyping(false);
